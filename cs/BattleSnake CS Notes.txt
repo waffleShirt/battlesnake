@@ -1,0 +1,8 @@
+BattleSnake CS Notes
+
+New Project -> ASP.NET Core -> Next -> Settings -> Create -> API -> Create
+Controllers Folder -> Add new controller -> API Controller with read/write (for template code)
+Remove api/ from route
+Create the 4 required endpoints /start /move /end /ping
+
+Implement /ping first. All it has to do is return a 200 response (IactionResult with helper function Ok())
