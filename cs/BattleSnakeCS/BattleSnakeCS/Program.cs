@@ -12,6 +12,7 @@ namespace BattleSnakeCS
     public class Program
     {
         public static BattleSnakeGame testGame = null;
+        public static PlayerSnake testPlayer = null; 
 
         public static void Main(string[] args)
         {

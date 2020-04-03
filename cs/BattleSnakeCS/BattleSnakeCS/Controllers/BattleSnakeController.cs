@@ -37,7 +37,15 @@ namespace BattleSnakeCS.Controllers
             JObject requestBodyJSON = JObject.Parse(requestBody);
 
             // Try creating a game
-            Program.testGame = new BattleSnakeGame(requestBodyJSON); 
+            if (Program.testPlayer == null)
+            {
+                Program.testPlayer = new PlayerSnake(requestBodyJSON); 
+                Program.testGame = new BattleSnakeGame(requestBodyJSON);
+            }
+            else
+            {
+                Program.testGame = new BattleSnakeGame(requestBodyJSON, Program.testPlayer); 
+            }
 
             if (Program.testGame != null)
             {
@@ -45,7 +53,7 @@ namespace BattleSnakeCS.Controllers
                 ContentResult result = new ContentResult();
                 result.StatusCode = 200;
                 result.ContentType = "application/json";
-                result.Content = Program.testGame.GetSnakePersonalisationContent(); 
+                result.Content = Program.testPlayer.GetSnakePersonalisationContent(); 
 
                 return result;
             }
@@ -123,6 +131,40 @@ namespace BattleSnakeCS.Controllers
             result.Content = "{ \"ping result\":\"success\"}";
 
             return result; 
+        }
+
+        // POST: BattleSnake/setsnakeparams
+        [HttpPost("setsnakeparams")]
+        public ContentResult SetSnakeParams()
+        {
+            Debug.WriteLine("Set snake params called");
+
+            // Read the request body
+            string requestBody = null;
+            using (var reader = new StreamReader(Request.Body))
+            {
+                requestBody = reader.ReadToEnd();
+            }
+
+            JObject requestBodyJSON = JObject.Parse(requestBody);
+
+            if (Program.testPlayer == null)
+            {
+                Program.testPlayer = new PlayerSnake();
+                Program.testPlayer.SetPersonalisation(requestBodyJSON); 
+            }
+            else
+            {
+                Program.testPlayer.SetPersonalisation(requestBodyJSON);
+            }
+
+            // Content is for debug purposes. 
+            ContentResult result = new ContentResult();
+            result.StatusCode = 200;
+            result.ContentType = "application/json";
+            result.Content = "{ \"Set snake params\":\"Success\"}";
+
+            return result;
         }
     }
 }
