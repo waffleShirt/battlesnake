@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿//using System;
+//using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using System.Diagnostics; 
+using System.Diagnostics;
+using Newtonsoft.Json;
+using System;
 
 namespace BattleSnakeCS.Controllers
 {
@@ -18,7 +20,7 @@ namespace BattleSnakeCS.Controllers
         [HttpGet]
         public string Get()
         {
-            return "Started Toms Shitty battlesnake game"; 
+            return "Started Toms Shitty battlesnake game";
         }
 
         // POST: BattleSnake/start
@@ -30,13 +32,13 @@ namespace BattleSnakeCS.Controllers
             JObject reqBody = ParseRequestBody(Request);
 
             // Create a new game
-            BattleSnakeGame newGame = new BattleSnakeGame(reqBody); 
-            Program.battleSnakeGames.Add(newGame); 
+            BattleSnakeGame newGame = new BattleSnakeGame(reqBody);
+            Program.battleSnakeGames.Add(newGame);
 
             ContentResult result = new ContentResult();
             result.StatusCode = 200;
             result.ContentType = "application/json";
-            result.Content = newGame.GetPlayerSnake().GetSnakePersonalisationContent(); 
+            result.Content = newGame.GetPlayerSnake().GetSnakePersonalisationJSON();
 
             return result;
         }
@@ -53,9 +55,9 @@ namespace BattleSnakeCS.Controllers
             ContentResult result = new ContentResult();
             result.StatusCode = 500;
 
-            string gameID = (string)reqBody["game"]["id"]; 
-            
-            foreach(BattleSnakeGame game in Program.battleSnakeGames)
+            string gameID = (string)reqBody["game"]["id"];
+
+            foreach (BattleSnakeGame game in Program.battleSnakeGames)
             {
                 if (game.GetGameID() == gameID)
                 {
@@ -66,8 +68,8 @@ namespace BattleSnakeCS.Controllers
                     result.ContentType = "application/json";
                     result.Content = nextMove;
 
-                    break; 
-                }    
+                    break;
+                }
             }
 
             return result;
@@ -83,14 +85,14 @@ namespace BattleSnakeCS.Controllers
 
             // Find the matching game by the ID received and delete it
             string gameID = (string)reqBody["game"]["id"];
-            BattleSnakeGame gameToDelete = null; 
+            BattleSnakeGame gameToDelete = null;
 
             foreach (BattleSnakeGame game in Program.battleSnakeGames)
             {
                 if (game.GetGameID() == gameID)
                 {
                     gameToDelete = game;
-                    break; 
+                    break;
                 }
             }
 
@@ -119,7 +121,7 @@ namespace BattleSnakeCS.Controllers
             result.ContentType = "application/json";
             result.Content = "{ \"ping result\":\"success\"}";
 
-            return result; 
+            return result;
         }
 
         // POST: BattleSnake/setsnakeparams
@@ -128,15 +130,29 @@ namespace BattleSnakeCS.Controllers
         {
             Debug.WriteLine("Set snake params called");
 
-            JObject reqBody = ParseRequestBody(Request); 
+            JObject reqBody = ParseRequestBody(Request);
 
-            BattleSnakeGame.ProtoypeSnake.SetPersonalisation(reqBody); 
+            BattleSnakeGame.ProtoypeSnake.SetPersonalisation(reqBody);
+            WritePersonalisationToFile(); 
 
             // Content is for debug purposes. 
             ContentResult result = new ContentResult();
             result.StatusCode = 200;
             result.ContentType = "application/json";
             result.Content = "{ \"Set snake params\":\"Success\"}";
+
+            return result;
+        }
+
+        // GET: BattleSnake/getsnakeparams
+        [HttpGet("getsnakeparams")]
+        public ContentResult GetSnakeParams()
+        {
+            // Content is for debug purposes. 
+            ContentResult result = new ContentResult();
+            result.StatusCode = 200;
+            result.ContentType = "application/json";
+            result.Content = BattleSnakeGame.ProtoypeSnake.GetSnakePersonalisationJSON();
 
             return result;
         }
@@ -151,6 +167,23 @@ namespace BattleSnakeCS.Controllers
             }
 
             return JObject.Parse(requestBody);
+        }
+
+        private void WritePersonalisationToFile()
+        {
+            string json = BattleSnakeGame.ProtoypeSnake.GetSnakePersonalisationJSON(); 
+            string path = Environment.CurrentDirectory;
+            System.IO.File.WriteAllText(Path.Combine(path, "test.json"), json);
+        }
+
+        private void ReadPersonalisationFromFile()
+        {
+            string path = Environment.CurrentDirectory;
+            using (StreamReader r = new StreamReader(Path.Combine(path, "test.json")))
+            {
+                string json = r.ReadToEnd();
+                BattleSnakeGame.ProtoypeSnake.SetPersonalisation(JObject.Parse(json));
+            }
         }
     }
 }

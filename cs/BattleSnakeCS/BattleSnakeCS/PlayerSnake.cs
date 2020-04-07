@@ -77,7 +77,7 @@ namespace BattleSnakeCS
             }
         }
 
-        public string GetSnakePersonalisationContent()
+        public string GetSnakePersonalisationJSON()
         {
             JObject personalisationContentJSON =
                 new JObject(

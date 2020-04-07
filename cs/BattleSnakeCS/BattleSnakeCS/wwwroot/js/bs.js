@@ -20,3 +20,21 @@
     });
 }); 
 
+$(document).ready(function ()
+{
+    var jqxhr = $.ajax({
+        url: "https://localhost:44346/BattleSnake/getsnakeparams",
+        method: "GET",
+        contentType: "application/json",
+        success: GetSnakeParamsSuccess,
+        //error: formSubmitFailure,
+    });
+});
+
+function GetSnakeParamsSuccess(data, textStatus, jqXHR)
+{ 
+    $("#head-type").val(data.headType); 
+    $("#tail-type").val(data.tailType); 
+    $("#snake-color").val(data.color); 
+
+}
