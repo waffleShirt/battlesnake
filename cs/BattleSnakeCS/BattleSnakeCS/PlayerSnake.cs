@@ -9,25 +9,44 @@ namespace BattleSnakeCS
 {
     public class PlayerSnake : Snake
     {
-        private string mColor = "#ff00ff";
-        private string mHeadType = "bendr";
-        private string mTailType = "pixel";
+        public struct Personalisation
+        {
+            public string mColor;
+            public string mHeadType;
+            public string mTailType;
+
+            public Personalisation(string color, string headType, string tailType)
+            {
+                mColor = color;  //"#ff00ff";
+                mHeadType = headType;  //"bendr";
+                mTailType = tailType;  //"pixel";
+            }
+        }
+
+        private Personalisation mPersonalisation; 
 
         public PlayerSnake()
         {
-
+            // Defaults for personalisation
+            mPersonalisation = new Personalisation("#ff00ff", "bendr", "pixel"); 
         }
 
-        public PlayerSnake(JObject payload)
+        public PlayerSnake(PlayerSnake other, JObject payload)
         {
-            InitialisePlayerSnake(payload);  
+            InitialisePlayerSnake(payload);
+            mPersonalisation = other.GetPersonalisation(); 
+        }
+
+        public Personalisation GetPersonalisation()
+        {
+            return mPersonalisation; 
         }
 
         public void SetPersonalisation(JObject payload)
         {
-            mColor = (string)payload["color"];
-            mHeadType = (string)payload["head-type"];
-            mTailType = (string)payload["tail-type"];
+            mPersonalisation.mColor = (string)payload["color"];
+            mPersonalisation.mHeadType = (string)payload["head-type"];
+            mPersonalisation.mTailType = (string)payload["tail-type"];
         }
 
         public void InitialisePlayerSnake(JObject payload)
@@ -62,9 +81,9 @@ namespace BattleSnakeCS
         {
             JObject personalisationContentJSON =
                 new JObject(
-                    new JProperty("color", mColor),
-                    new JProperty("headType", mHeadType),
-                    new JProperty("tailType", mTailType));
+                    new JProperty("color", mPersonalisation.mColor),
+                    new JProperty("headType", mPersonalisation.mHeadType),
+                    new JProperty("tailType", mPersonalisation.mTailType));
 
             return personalisationContentJSON.ToString(Newtonsoft.Json.Formatting.None); 
         }

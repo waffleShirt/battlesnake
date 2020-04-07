@@ -25,70 +25,50 @@ namespace BattleSnakeCS.Controllers
         [HttpPost("start")]
         public ContentResult Start()
         {
-            Debug.WriteLine("Start called"); 
+            Debug.WriteLine("Start called");
 
-            // Read the request body
-            string requestBody = null; 
-            using (var reader = new StreamReader(Request.Body))
-            {
-                requestBody = reader.ReadToEnd();
-            }
+            JObject reqBody = ParseRequestBody(Request);
 
-            JObject requestBodyJSON = JObject.Parse(requestBody);
+            // Create a new game
+            BattleSnakeGame newGame = new BattleSnakeGame(reqBody); 
+            Program.battleSnakeGames.Add(newGame); 
 
-            // Try creating a game
-            if (Program.testPlayer == null)
-            {
-                Program.testPlayer = new PlayerSnake(requestBodyJSON); 
-                Program.testGame = new BattleSnakeGame(requestBodyJSON);
-            }
-            else
-            {
-                Program.testGame = new BattleSnakeGame(requestBodyJSON, Program.testPlayer); 
-            }
+            ContentResult result = new ContentResult();
+            result.StatusCode = 200;
+            result.ContentType = "application/json";
+            result.Content = newGame.GetPlayerSnake().GetSnakePersonalisationContent(); 
 
-            if (Program.testGame != null)
-            {
-                // Send back the player settings for the game
-                ContentResult result = new ContentResult();
-                result.StatusCode = 200;
-                result.ContentType = "application/json";
-                result.Content = Program.testPlayer.GetSnakePersonalisationContent(); 
-
-                return result;
-            }
-            else
-            {
-                ContentResult result = new ContentResult();
-                result.StatusCode = 500;
-                return result; 
-            }
+            return result;
         }
 
         // Post: BattleSnake/move
         [HttpPost("move")]
         public ContentResult Move()
         {
-            Debug.WriteLine("Move called"); 
+            Debug.WriteLine("Move called");
 
-            // Read the request body
-            string requestBody = null;
-            using (var reader = new StreamReader(Request.Body))
-            {
-                requestBody = reader.ReadToEnd();
-            }
+            JObject reqBody = ParseRequestBody(Request);
 
-            JObject requestBodyJSON = JObject.Parse(requestBody);
-
-            // TODO: Need to find the matching game by the ID received
-
-            // Return the players move
-            string nextMove = Program.testGame.CompleteTurn(requestBodyJSON); 
-
+            // Find the matching game by the ID received and update it
             ContentResult result = new ContentResult();
-            result.StatusCode = 200;
-            result.ContentType = "application/json";
-            result.Content = nextMove; 
+            result.StatusCode = 500;
+
+            string gameID = (string)reqBody["game"]["id"]; 
+            
+            foreach(BattleSnakeGame game in Program.battleSnakeGames)
+            {
+                if (game.GetGameID() == gameID)
+                {
+                    // Return the players move
+                    string nextMove = game.CompleteTurn(reqBody);
+
+                    result.StatusCode = 200;
+                    result.ContentType = "application/json";
+                    result.Content = nextMove;
+
+                    break; 
+                }    
+            }
 
             return result;
         }
@@ -99,24 +79,33 @@ namespace BattleSnakeCS.Controllers
         {
             Debug.WriteLine("End called");
 
-            // Read the request body
-            string requestBody = null;
-            using (var reader = new StreamReader(Request.Body))
+            JObject reqBody = ParseRequestBody(Request);
+
+            // Find the matching game by the ID received and delete it
+            string gameID = (string)reqBody["game"]["id"];
+            BattleSnakeGame gameToDelete = null; 
+
+            foreach (BattleSnakeGame game in Program.battleSnakeGames)
             {
-                requestBody = reader.ReadToEnd();
+                if (game.GetGameID() == gameID)
+                {
+                    gameToDelete = game;
+                    break; 
+                }
             }
 
-            JObject requestBodyJSON = JObject.Parse(requestBody);
-
-            // TODO: Need to find the matching game by the ID received
-
-            // Return the players move
-            Program.testGame.EndGame(requestBodyJSON);
-
-            ContentResult result = new ContentResult();
-            result.StatusCode = 200;
+            if (gameToDelete != null)
+            {
+                Program.battleSnakeGames.Remove(gameToDelete);
+            }
+            else
+            {
+                // TODO: We have a fail
+            }
 
             // Doesn't really matter as the server ignores the request
+            ContentResult result = new ContentResult();
+            result.StatusCode = 200;
             return result;
         }
 
@@ -139,24 +128,9 @@ namespace BattleSnakeCS.Controllers
         {
             Debug.WriteLine("Set snake params called");
 
-            // Read the request body
-            string requestBody = null;
-            using (var reader = new StreamReader(Request.Body))
-            {
-                requestBody = reader.ReadToEnd();
-            }
+            JObject reqBody = ParseRequestBody(Request); 
 
-            JObject requestBodyJSON = JObject.Parse(requestBody);
-
-            if (Program.testPlayer == null)
-            {
-                Program.testPlayer = new PlayerSnake();
-                Program.testPlayer.SetPersonalisation(requestBodyJSON); 
-            }
-            else
-            {
-                Program.testPlayer.SetPersonalisation(requestBodyJSON);
-            }
+            BattleSnakeGame.ProtoypeSnake.SetPersonalisation(reqBody); 
 
             // Content is for debug purposes. 
             ContentResult result = new ContentResult();
@@ -165,6 +139,18 @@ namespace BattleSnakeCS.Controllers
             result.Content = "{ \"Set snake params\":\"Success\"}";
 
             return result;
+        }
+
+        private JObject ParseRequestBody(HttpRequest req)
+        {
+            // Read the request body
+            string requestBody = null;
+            using (var reader = new StreamReader(req.Body))
+            {
+                requestBody = reader.ReadToEnd();
+            }
+
+            return JObject.Parse(requestBody);
         }
     }
 }

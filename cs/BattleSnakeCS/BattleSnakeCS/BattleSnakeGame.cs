@@ -15,7 +15,9 @@ namespace BattleSnakeCS
         private string mGameID = null;
         private int mTurn = 0;
         private Board mBoard = null;
-        private PlayerSnake mYou = null;
+        private PlayerSnake mPlayer = null;
+
+        public static PlayerSnake ProtoypeSnake = new PlayerSnake(); 
 
         public BattleSnakeGame(JObject payload)
         {
@@ -24,18 +26,17 @@ namespace BattleSnakeCS
 
             mBoard = new Board(payload);
 
-            mYou = new PlayerSnake(payload); 
+            mPlayer = new PlayerSnake(ProtoypeSnake, payload); 
         }
 
-        public BattleSnakeGame(JObject payload, PlayerSnake playerSnake)
+        public string GetGameID()
         {
-            mGameID = (string)payload["game"]["id"];
-            mTurn = (int)payload["turn"];
-
-            mBoard = new Board(payload);
-
-            mYou = playerSnake;
-            playerSnake.InitialisePlayerSnake(payload); 
+            return mGameID; 
+        }
+            
+        public PlayerSnake GetPlayerSnake()
+        {
+            return mPlayer; 
         }
 
         public string CompleteTurn(JObject payload)
@@ -74,6 +75,7 @@ namespace BattleSnakeCS
 
         public void EndGame(JObject payload)
         {
+            // TODO: Do we even need to do any teardown on the game when it's done?
             // Update the turn number
             mTurn = (int)payload["turn"];
 
@@ -94,7 +96,7 @@ namespace BattleSnakeCS
 
         private void UpdateYourSnake(JObject payload)
         {
-            mYou.DeserialisePlayerSnake(payload); 
+            mPlayer.DeserialisePlayerSnake(payload); 
         }
     }
 }
