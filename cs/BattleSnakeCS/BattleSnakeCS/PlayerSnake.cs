@@ -3,7 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Drawing; 
+using System.Drawing;
+using System.IO;
 
 namespace BattleSnakeCS
 {
@@ -45,8 +46,8 @@ namespace BattleSnakeCS
         public void SetPersonalisation(JObject payload)
         {
             mPersonalisation.mColor = (string)payload["color"];
-            mPersonalisation.mHeadType = (string)payload["head-type"];
-            mPersonalisation.mTailType = (string)payload["tail-type"];
+            mPersonalisation.mHeadType = (string)payload["headType"];
+            mPersonalisation.mTailType = (string)payload["tailType"];
         }
 
         public void InitialisePlayerSnake(JObject payload)
@@ -86,6 +87,22 @@ namespace BattleSnakeCS
                     new JProperty("tailType", mPersonalisation.mTailType));
 
             return personalisationContentJSON.ToString(Newtonsoft.Json.Formatting.None); 
+        }
+
+        public void WritePersonalisationToFile(string filename)
+        {
+            string path = Path.Combine(Environment.CurrentDirectory, filename);
+            File.WriteAllText(path, GetSnakePersonalisationJSON());
+        }
+
+        public void ReadPersonalisationFromFile(string filename)
+        {
+            string path = Path.Combine(Environment.CurrentDirectory, filename);
+            using (StreamReader r = new StreamReader(path))
+            {
+                string json = r.ReadToEnd();
+                SetPersonalisation(JObject.Parse(json));
+            }
         }
     }
 }

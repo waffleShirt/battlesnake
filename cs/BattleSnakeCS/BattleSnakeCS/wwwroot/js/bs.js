@@ -4,8 +4,8 @@
 
     var data = {
         "color" : $("#snake-color").val(),
-        "head-type": $("#head-type").val(), 
-        "tail-type" : $("#tail-type").val()
+        "headType": $("#head-type").val(), 
+        "tailType" : $("#tail-type").val()
     };
 
     console.log(data); 

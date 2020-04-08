@@ -17,8 +17,6 @@ namespace BattleSnakeCS
         private Board mBoard = null;
         private PlayerSnake mPlayer = null;
 
-        public static PlayerSnake ProtoypeSnake = new PlayerSnake(); 
-
         public BattleSnakeGame(JObject payload)
         {
             mGameID = (string)payload["game"]["id"];
@@ -26,7 +24,7 @@ namespace BattleSnakeCS
 
             mBoard = new Board(payload);
 
-            mPlayer = new PlayerSnake(ProtoypeSnake, payload); 
+            mPlayer = new PlayerSnake(Program.ProtoypeSnake, payload); 
         }
 
         public string GetGameID()
@@ -46,7 +44,7 @@ namespace BattleSnakeCS
 
             // Update food coords, opponents, and your snake
             mBoard.UpdateBoard(payload); 
-            UpdateYourSnake(payload);
+            UpdatePlayerSnake(payload);
 
             // Hardcode next move for now
             count += 1;
@@ -81,7 +79,7 @@ namespace BattleSnakeCS
 
             // Update food coords, opponents, and your snake....is it even necessary though?
             mBoard.UpdateBoard(payload); 
-            UpdateYourSnake(payload);
+            UpdatePlayerSnake(payload);
 
             // And then what......
         }
@@ -94,7 +92,7 @@ namespace BattleSnakeCS
 
         }
 
-        private void UpdateYourSnake(JObject payload)
+        private void UpdatePlayerSnake(JObject payload)
         {
             mPlayer.DeserialisePlayerSnake(payload); 
         }

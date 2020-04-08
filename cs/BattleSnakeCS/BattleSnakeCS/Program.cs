@@ -12,9 +12,11 @@ namespace BattleSnakeCS
     public class Program
     {
         public static List<BattleSnakeGame> battleSnakeGames = new List<BattleSnakeGame>();
+        public static PlayerSnake ProtoypeSnake = new PlayerSnake();
 
         public static void Main(string[] args)
         {
+            ProtoypeSnake.ReadPersonalisationFromFile("personalisation.json");
             CreateHostBuilder(args).Build().Run();
         }
 

@@ -132,8 +132,8 @@ namespace BattleSnakeCS.Controllers
 
             JObject reqBody = ParseRequestBody(Request);
 
-            BattleSnakeGame.ProtoypeSnake.SetPersonalisation(reqBody);
-            WritePersonalisationToFile(); 
+            Program.ProtoypeSnake.SetPersonalisation(reqBody);
+            Program.ProtoypeSnake.WritePersonalisationToFile("personalisation.json");
 
             // Content is for debug purposes. 
             ContentResult result = new ContentResult();
@@ -152,7 +152,7 @@ namespace BattleSnakeCS.Controllers
             ContentResult result = new ContentResult();
             result.StatusCode = 200;
             result.ContentType = "application/json";
-            result.Content = BattleSnakeGame.ProtoypeSnake.GetSnakePersonalisationJSON();
+            result.Content = Program.ProtoypeSnake.GetSnakePersonalisationJSON();
 
             return result;
         }
@@ -167,23 +167,6 @@ namespace BattleSnakeCS.Controllers
             }
 
             return JObject.Parse(requestBody);
-        }
-
-        private void WritePersonalisationToFile()
-        {
-            string json = BattleSnakeGame.ProtoypeSnake.GetSnakePersonalisationJSON(); 
-            string path = Environment.CurrentDirectory;
-            System.IO.File.WriteAllText(Path.Combine(path, "test.json"), json);
-        }
-
-        private void ReadPersonalisationFromFile()
-        {
-            string path = Environment.CurrentDirectory;
-            using (StreamReader r = new StreamReader(Path.Combine(path, "test.json")))
-            {
-                string json = r.ReadToEnd();
-                BattleSnakeGame.ProtoypeSnake.SetPersonalisation(JObject.Parse(json));
-            }
         }
     }
 }
