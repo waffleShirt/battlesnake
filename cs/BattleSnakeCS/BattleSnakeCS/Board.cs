@@ -70,5 +70,20 @@ namespace BattleSnakeCS
                 mFood.Add(new Point(x, y));
             }
         }
+
+        public Point GetBoardSize()
+        {
+            return new Point(mBoardWidth, mBoardHeight); 
+        }
+
+        public List<Point> GetFood()
+        {
+            return mFood; 
+        }
+
+        public List<Snake> GetOpponents()
+        {
+            return mOpponents; 
+        }
     }
 }

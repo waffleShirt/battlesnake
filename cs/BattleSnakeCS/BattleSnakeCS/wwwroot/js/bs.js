@@ -11,7 +11,8 @@
     console.log(data); 
 
     var jqxhr = $.ajax({
-        url: "https://localhost:44346/BattleSnake/setsnakeparams",
+//        url: "https://localhost:44346/BattleSnake/setsnakeparams",
+        url: "https://waffleshirtbattlesnake.azurewebsites.net/BattleSnake/setsnakeparams",
         method: "POST",
         contentType: "application/json",
         data: JSON.stringify(data),
@@ -23,7 +24,7 @@
 $(document).ready(function ()
 {
     var jqxhr = $.ajax({
-        url: "https://localhost:44346/BattleSnake/getsnakeparams",
+        url: "https://waffleshirtbattlesnake.azurewebsites.net/BattleSnake/getsnakeparams",
         method: "GET",
         contentType: "application/json",
         success: GetSnakeParamsSuccess,

@@ -6,3 +6,12 @@ Remove api/ from route
 Create the 4 required endpoints /start /move /end /ping
 
 Implement /ping first. All it has to do is return a 200 response (IactionResult with helper function Ok())
+
+Snake Logic: Seek nearest food. Avoid opponent bodies. Avoid own body. Seek closer food if something appears. Avoid walls. 
+
+Snake movement notes: 20/04/20
+Snake currently avoids walls, but if moving toward a wall but not along an edge of the board, there is a hardcoded turn choice. Snake should never do this though, as it should always have a target to move towards. 
+
+Snake will usually avoid it's own body. It does so by looking at the space in the direction it wants to turn, if that space is occupied it will turn in the opposite direction. It currently fails in situations where a turn in the opposite direction would also be invalid. See fail01.png for details. To fix this I need to check if making a move in the opposite direction is valid, and if it isn't, try a different move. Potentially it would make sense to track the the last move the snake made and use that as a check against the next move for validity. 
+
+There are also fail situations where the snake loops in on itself and has nowhere to go. Not sure how best to avoid this scenario. 

@@ -46,29 +46,49 @@ namespace BattleSnakeCS
             mBoard.UpdateBoard(payload); 
             UpdatePlayerSnake(payload);
 
-            // Hardcode next move for now
-            count += 1;
+            PlayerSnake.Direction moveDirection = mPlayer.GetNextMove(mBoard); 
 
-            if (count % 4 == 1)
+            switch (moveDirection)
             {
-                return "{ \"move\":\"left\", " +
-                        " \"shout\": \"I am shouting\"}";
+                case PlayerSnake.Direction.Up:
+                    return "{ \"move\":\"up\", " +
+                            " \"shout\": \"I am shouting\"}";
+                case PlayerSnake.Direction.Down:
+                    return "{ \"move\":\"down\", " +
+                            " \"shout\": \"I am shouting\"}";
+                case PlayerSnake.Direction.Left:
+                    return "{ \"move\":\"left\", " +
+                            " \"shout\": \"I am shouting\"}";
+                case PlayerSnake.Direction.Right:
+                    return "{ \"move\":\"right\", " +
+                            " \"shout\": \"I am shouting\"}";
+                default:
+                    return "{ \"move\":\"none\", " +
+                            " \"shout\": \"An error has occurred\"}";
             }
-            else if (count % 4 == 2)
-            {
-                return "{ \"move\":\"down\", " +
-                        " \"shout\": \"I am shouting\"}";
-            }
-            else if (count % 4 == 3)
-            {
-                return "{ \"move\":\"right\", " +
-                        " \"shout\": \"I am shouting\"}";
-            }
-            else
-            {
-                return "{ \"move\":\"up\", " +
-                        " \"shout\": \"I am shouting\"}";
-            }
+            //// Hardcode next move for now
+            //count += 1;
+
+            //if (count % 4 == 1)
+            //{
+            //    return "{ \"move\":\"left\", " +
+            //            " \"shout\": \"I am shouting\"}";
+            //}
+            //else if (count % 4 == 2)
+            //{
+            //    return "{ \"move\":\"down\", " +
+            //            " \"shout\": \"I am shouting\"}";
+            //}
+            //else if (count % 4 == 3)
+            //{
+            //    return "{ \"move\":\"right\", " +
+            //            " \"shout\": \"I am shouting\"}";
+            //}
+            //else
+            //{
+            //    return "{ \"move\":\"up\", " +
+            //            " \"shout\": \"I am shouting\"}";
+            //}
         }
 
         public void EndGame(JObject payload)
